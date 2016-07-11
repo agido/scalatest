@@ -415,7 +415,7 @@ object ScalatestBuild extends Build {
    .settings(scalatestDocSettings: _*)
    .settings(
      projectTitle := "ScalaTest",
-     organization := "org.scalatest",
+     organization := "org.pageobject.patch.org.scalatest",
      moduleName := "scalatest",
      initialCommands in console := """|import org.scalatest._
                                       |import org.scalactic._
@@ -458,6 +458,7 @@ object ScalatestBuild extends Build {
    ).settings(osgiSettings: _*).settings(
       OsgiKeys.exportPackage := Seq(
         "org.scalatest",
+        "org.scalatest.compatible",
         "org.scalatest.concurrent",
         "org.scalatest.easymock",
         "org.scalatest.enablers",
