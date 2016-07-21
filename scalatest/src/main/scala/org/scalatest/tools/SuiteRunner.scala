@@ -59,7 +59,7 @@ private[scalatest] class SuiteRunner(suite: Suite, args: Args, status: ScalaTest
                   dispatch(SuiteCompleted(tracker.nextOrdinal(), suite.suiteName, suite.suiteId, Some(suite.getClass.getName), Some(duration), formatter, Some(TopOfClass(suite.getClass.getName)), suite.rerunner))
               case Failure(ue) =>
                 status.setFailed() // Don't forward the unreportedException to the returned status, because reporting it here in this SuiteAborted
-                if (!suite.isInstanceOf[DistributedTestRunnerSuite])
+                //if (!suite.isInstanceOf[DistributedTestRunnerSuite])
                   dispatch(SuiteAborted(tracker.nextOrdinal(), ue.getMessage, suite.suiteName, suite.suiteId, Some(suite.getClass.getName), Some(ue), Some(duration), formatter, Some(SeeStackDepthException), suite.rerunner))
             }
           }
