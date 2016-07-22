@@ -46,18 +46,22 @@ private[scalatest] class SuiteSortingReporter(dispatch: Reporter, sortingTimeout
   private val timer = new Timer
   private var timeoutTask: Option[TimeoutTask] = None
 
+  private def setupSlotMap(suiteId: String): Slot = {
+    slotMap.get(suiteId) match {
+      case Some(s) => s
+      case None =>
+        val newSlot = Slot(suiteId, None, false, false, false)
+        slotMap.put(suiteId, newSlot)
+        newSlot
+    }
+  }
+
   def doApply(event: Event): Unit = {
     synchronized {
       event match {
         case suiteStarting: SuiteStarting =>
           // if distributingTests is called (in case of the suite is ParallelTestExecution), the slot is already exists
-          val slot = slotMap.get(suiteStarting.suiteId) match {
-            case Some(s) => s
-            case None => 
-              val newSlot = Slot(suiteStarting.suiteId, None, false, false, false)
-              slotMap.put(suiteStarting.suiteId, newSlot)
-              newSlot
-          }
+          val slot = setupSlotMap(suiteStarting.suiteId)
           slotListBuf += slot
           // if it is the head, we should start the timer, because it is possible that this slot has no event coming later and it keeps blocking 
           // without the timer.
@@ -130,6 +134,7 @@ private[scalatest] class SuiteSortingReporter(dispatch: Reporter, sortingTimeout
 
   // Handles just SuiteCompleted and SuiteAborted
   private def handleSuiteEvents(suiteId: String, event: Event): Unit = {
+    setupSlotMap(suiteId)
     val slot = slotMap(suiteId)
     val newSlot = slot.copy(doneEvent = Some(event), ready = (if (slot.includesDistributedTests) slot.testsCompleted else true))  // Assuming here that a done event hasn't already arrived
     slotMap.put(suiteId, newSlot)                     // Probably should fail on the second one
